@@ -3,15 +3,23 @@ package lab.facade;
 public class ComputerFacade {
     private final Cpu cpu;
     private final Memory memory;
-    private final HardDrive hd;
+    private final IHardDrive hd;
     private static final long BOOT_ADDRESS = 0x1000;
     private static final long BOOT_SECTOR = 0x2000;
     private static final int SECTOR_SIZE = 64;
 
+    private boolean sleeping = false;
+
     public ComputerFacade() {
         this.cpu = new Cpu();
         this.memory = new Memory();
-        this.hd = new HardDrive();
+        this.hd = new Hdd();
+    }
+
+    public ComputerFacade(Cpu cpu, Memory memory, IHardDrive hd) {
+    this.cpu = cpu;
+    this.memory = memory;
+    this.hd = hd;
     }
 
     public void start() {
@@ -27,6 +35,28 @@ public class ComputerFacade {
     public void shutdown() {
         System.out.println("Facade: shutting down computer");
         // In a real system you'd order components gracefully
+
+        // VERY SIMPLE METRICS REPORT
+        System.out.println("===== METRICS REPORT =====");
+        hd.getReads();
+        System.out.println("==========================");
         System.out.println("Facade: power off\n");
     }
+
+    public void sleep() {
+System.out.println("Facade: saving state + lowering power");
+sleeping = true;
+System.out.println("Facade: Computer is now sleeping.\n");
+}
+
+
+public void wake() {
+if (sleeping) {
+System.out.println("Facade: restoring state + full power");
+sleeping = false;
+System.out.println("Facade: Computer is now awake.\n");
+}
+}
+
+
 }
